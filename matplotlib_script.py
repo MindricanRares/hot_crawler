@@ -1,16 +1,29 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from time import time
-number_of_posts = []
+import os
+import json
+from textwrap import wrap
+from collections import OrderedDict
 
-
-t=time()
-with open('output.txt', 'r') as f:
-    number_of_posts=f.readlines()
-x = np.array([0, 1, 2, 3,4,5,6])
-y = np.array(number_of_posts)
-my_xticks = ['python', 'java', 'sql', 'dotnet','php','android','other']
+pics_folder_name = 'hot_graphs'
+t = time()
+with open('output.json', 'r') as f:
+    data = json.load(f)
+data = OrderedDict(sorted(data.items(), key=lambda kv: kv[1], reverse=True))
+sum = 0;
+for val in data.values()[10:]:
+    sum += val
+keys = ['\n'.join(wrap(l, 20)) for l in data.keys()]
+x = np.array(range(0, 11))
+my_xticks = keys[0:10]
+my_xticks.append('other')
 plt.xticks(x, my_xticks)
+y_values = data.values()[0:10]
+y_values.append(sum)
+y = np.array(y_values)
 plt.plot(x, y)
-timestr=str(t)+'.png'
+if not os.path.exists(pics_folder_name):
+    os.makedirs(pics_folder_name)
+timestr = pics_folder_name + '/' + str(t) + '.png'
 plt.savefig(timestr)
